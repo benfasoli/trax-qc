@@ -1,0 +1,15 @@
+{
+  "dependencies": {
+    "firebase": "latest",
+    "firebaseui": "latest",
+    "js-cookie": "latest",
+    "next": "latest",
+    "plotly.js": "latest",
+    "react": "latest",
+    "react-dom": "latest",
+    "react-plotly.js": "latest"
+  },
+  "scripts": {
+    "now-build": "next build && next export -o dist"
+  }
+}
