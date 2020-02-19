@@ -1,23 +1,38 @@
 import React from 'react';
-import plotly from 'plotly.js/dist/plotly';
-import createPlotComponent from 'react-plotly.js/factory';
+import Plot from 'react-plotly.js';
 
-const Plot = createPlotComponent(plotly);
-
-export default props => {
+// Station_ID: "TRX01"
+// Date: "2019-06-10"
+// TimeUTC: "00:00:00"
+// esampler_pm25_ugm3: "1.00"
+// esampler_flow_Lmin: "2.00"
+// esampler_temp_C: "24.00"
+// esampler_rh_pcent: "15.00"
+// esampler_error_code: "0.00"
+// esampler_pres_hpa: "883.40"
+// qc_flags: ""
+export default ({ x, y, color, symbol, height }) => {
+  height = height || 600;
+  
   return (
     <Plot
       data={[
         {
-          x: [1, 2, 3],
-          y: [2, 6, 3],
-          type: 'scatter',
-          mode: 'lines+points',
-          marker: { color: 'red' }
-        },
-        { type: 'bar', x: [1, 2, 3], y: [2, 5, 3] }
+          x,
+          y,
+          type: 'scattergl',
+          mode: 'markers',
+          marker: {
+            color,
+            colorscale: 'Viridis',
+            opacity: 0.5,
+            symbol
+          }
+        }
       ]}
-      layout={{ width: 320, height: 240, title: 'A Fancy Plot' }}
+      config={{ responsive: true }}
+      layout={{ autosize: true }}
+      style={{ height, width: 'inherit' }}
     />
   );
 };

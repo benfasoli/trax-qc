@@ -83,51 +83,47 @@ export const useAuth = () => {
   return { user, authError: error, signOut: handleSignOut };
 };
 
-export const approvePendingUserId = uid => {
-  const docRef = db.collection('pendingUsers').doc(uid);
-  docRef.get().then(doc => {
-    if (doc.exists) {
-      db.collection('users')
-        .doc(uid)
-        .set({ ...doc.data() })
-        .then(() => {
-          docRef.delete().catch(err => console.error);
-        });
-    }
-  });
-};
-
-export const createPendingUser = user => {
-  const uid = user.uid;
+const createPendingUser = user => {
   db.collection('pendingUsers')
-    .doc(uid)
+    .doc(user.uid)
     .set({ displayName: user.displayName, email: user.email });
-};
-
-export const getPendingUsers = () => {
-  return db
-    .collection('pendingUsers')
-    .get()
-    .then(querySnapshot =>
-      querySnapshot.docs.map(x => {
-        return { ...x.data(), uid: x.id };
-      })
-    );
-};
-
-export const rejectPendingUserId = uid => {
-  db.collection('pendingUsers')
-    .doc(uid)
-    .delete()
-    .catch(err => console.error);
 };
 
 export const usePendingUsers = () => {
   const [pendingUsers, setPendingUsers] = useState([]);
 
   useEffect(() => {
-    getPendingUsers().then(setPendingUsers);
+    db.collection('pendingUsers')
+      .get()
+      .then(querySnapshot =>
+        querySnapshot.docs.map(x => {
+          return { ...x.data(), uid: x.id };
+        })
+      )
+      .then(setPendingUsers);
   }, []);
 
-  return pendingUsers;
+  const approvePendingUser = user => {
+    const uid = user.uid;
+    const docRef = db.collection('pendingUsers').doc(user.uid);
+    docRef.get().then(doc => {
+      if (doc.exists) {
+        db.collection('users')
+          .doc(uid)
+          .set({ ...doc.data() })
+          .then(() => {
+            docRef.delete().catch(err => console.error);
+          });
+      }
+    });
+  };
+
+  const rejectPendingUser = user => {
+    db.collection('pendingUsers')
+      .doc(user.uid)
+      .delete()
+      .catch(err => console.error);
+  };
+
+  return { pendingUsers, approvePendingUser, rejectPendingUser };
 };
